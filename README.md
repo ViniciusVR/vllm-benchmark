@@ -103,26 +103,7 @@ The easiest setup on a Slurm cluster is to use the provided setup script:
 sbatch scripts/setup_env.sbatch
 ```
 
-This script creates a virtual environment named:
-
-```text
-venv/
-```
-
-and installs the required packages, including:
-
-```text
-torch
-transformers==4.46.3
-tokenizers<0.21
-vllm==0.6.4.post1
-pandas
-matplotlib
-aiohttp
-openai
-```
-
-The pinned versions are important because newer versions of `transformers` and `tokenizers` may cause compatibility issues with `vllm==0.6.4.post1`.
+This script creates a virtual environment and installs the required packages.
 
 After submitting the setup job, monitor it with:
 
@@ -182,28 +163,6 @@ pip install "transformers==4.46.3" "tokenizers<0.21"
 pip uninstall -y vllm
 pip install "vllm==0.6.4.post1"
 ```
-
-Then verify the install:
-
-```bash
-python - <<'PY'
-import torch
-import transformers
-import tokenizers
-import vllm
-import pandas
-import matplotlib
-
-print("Torch:", torch.__version__)
-print("CUDA available:", torch.cuda.is_available())
-print("Transformers:", transformers.__version__)
-print("Tokenizers:", tokenizers.__version__)
-print("vLLM:", vllm.__version__)
-print("Pandas:", pandas.__version__)
-print("Matplotlib:", matplotlib.__version__)
-PY
-```
-
 ---
 
 ## 5. Running the Hugging Face Benchmarks
