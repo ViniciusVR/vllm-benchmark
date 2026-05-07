@@ -2,7 +2,7 @@
 
 This repository contains the code, prompt files, Slurm scripts, and plotting utilities used to compare Hugging Face `generate()` against vLLM for large language model serving. The project benchmarks request throughput under controlled batch-size, sequence-length, and concurrency sweeps.
 
-The project was designed for UCF's Newton HPC cluster, but it can also be installed in a normal Python environment if the required GPU, CUDA, and Python dependencies are available.
+The project was designed to run on UCF's Newton HPC cluster, but it can also be installed in a normal Python environment if the required GPU, CUDA, and Python dependencies are available.
 
 ---
 
