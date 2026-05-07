@@ -55,7 +55,7 @@ cd vllm-benchmark
 On some clusters, Git may fail because the login node limits thread creation. If that happens, use:
 
 ```bash
-git -c pack.threads=1 clone --depth 1 https://github.com/ViniciusVR/vllm-benchmark.git
+git -c pack.threads=1 clone https://github.com/ViniciusVR/vllm-benchmark.git
 cd vllm-benchmark
 ```
 
