@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# run_plot_requests_per_sec.sbatch
+# show_results.sh
 #
 # Creates grouped bar charts comparing Hugging Face generate() and vLLM
 # using requests/sec as the plotted metric.
 #
 # Run from project root:
-#   sbatch scripts/run_plot_requests_per_sec.sbatch
+#   sbatch scripts/show_results.sh
 #
 
 #SBATCH --job-name=plot_requests_per_sec
@@ -32,6 +32,7 @@ cd "${PROJECT_ROOT}"
 mkdir -p scripts/logs
 mkdir -p figures
 
+# Load Python and activate the project environment.
 module purge
 module load python/python-3.11.4-gcc-12.2.0 || module load python
 
@@ -47,6 +48,7 @@ echo "============================================================"
 echo "Running plotting script"
 echo "============================================================"
 
+# Generate requests/sec plots for all sweeps.
 python python/plot_sweep_results.py \
     --results-dir results \
     --output-dir figures \

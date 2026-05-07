@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# run_hf_concurrency_sweep.sbatch
+# run_hf_concurrency_sweep.sh
 #
 # Hugging Face generate() simulated concurrency sweep.
 #
@@ -16,7 +16,7 @@
 # batching or request scheduler.
 #
 # Run from project root:
-#   sbatch scripts/run_hf_concurrency_sweep.sbatch
+#   sbatch scripts/run_hf_concurrency_sweep.sh
 #
 
 #SBATCH --job-name=hf_concurrency_sweep
@@ -26,7 +26,7 @@
 #SBATCH --gres=gpu:nvidia_h100_pcie:1
 #SBATCH --output=scripts/logs/hf_concurrency_sweep_%j.out
 #SBATCH --error=scripts/logs/hf_concurrency_sweep_%j.err
-#SBATCH --time=04:00:00
+#SBATCH --time=08:00:00
 
 set -euo pipefail
 
@@ -35,12 +35,14 @@ cd "${PROJECT_ROOT}"
 
 mkdir -p scripts/logs results
 
+# Load cluster modules.
 module purge
 module load python/python-3.11.4-gcc-12.2.0 || module load python
 module load cuda || true
 
 source "${PROJECT_ROOT}/venv/bin/activate"
 
+# Limit CPU-side threading to avoid OpenBLAS/MKL process-limit errors.
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export OPENBLAS_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export MKL_NUM_THREADS=${SLURM_CPUS_PER_TASK}
@@ -48,11 +50,13 @@ export NUMEXPR_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export TOKENIZERS_PARALLELISM=false
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
+# Hugging Face cache and authentication.
 export HF_HOME="${PROJECT_ROOT}/.cache/huggingface"
 export TRANSFORMERS_CACHE="${HF_HOME}/transformers"
 export HF_DATASETS_CACHE="${HF_HOME}/datasets"
 mkdir -p "${HF_HOME}" "${TRANSFORMERS_CACHE}" "${HF_DATASETS_CACHE}"
 
+# Load Hugging Face token from project folder.
 if [ -f "${PROJECT_ROOT}/.hf_token" ]; then
     export HF_TOKEN="$(cat "${PROJECT_ROOT}/.hf_token")"
     echo "HF_TOKEN loaded from project .hf_token file"
@@ -75,6 +79,7 @@ MODEL_NAME="meta-llama/Llama-2-7b-chat-hf"
 PROMPT_FILE="prompts/prompts_512.jsonl"
 OUTPUT_CSV="results/hf_concurrency_sweep.csv"
 
+# Run sweep.
 python python/benchmark_hf_generate.py \
     --model-name "${MODEL_NAME}" \
     --prompt-files "${PROMPT_FILE}" \

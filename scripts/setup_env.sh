@@ -1,16 +1,12 @@
 #!/bin/bash
 #
-# setup_vllm_env.sbatch
+# setup_env.sh
 #
 # This job creates a Python virtual environment and installs all dependencies
-# needed for the project, including:
-#   - PyTorch
-#   - Hugging Face Transformers
-#   - vLLM
-#   - pandas/tqdm/aiohttp/openai for benchmarking and CSV logging
+# needed for the project.
 #
 # Run with:
-#   sbatch scripts/setup_vllm_env.sbatch
+#   sbatch scripts/setup_env.sh
 #
 
 #SBATCH --job-name=setup_vllm_env
@@ -31,36 +27,16 @@ echo "Node: ${SLURMD_NODENAME}"
 echo "Start time: $(date)"
 echo "============================================================"
 
-# ---------------------------------------------------------------------
 # Move to the project root.
-# This assumes the sbatch command is submitted from the project root.
-# Example:
-#   sbatch scripts/setup_vllm_env.sbatch
-# ---------------------------------------------------------------------
 PROJECT_ROOT="$(pwd)"
 cd "${PROJECT_ROOT}"
 
-# ---------------------------------------------------------------------
-# Create directories used by this project.
-# logs/ stores Slurm output.
-# prompts/ stores generated JSONL prompts.
-# results/ stores benchmark CSV files.
-# ---------------------------------------------------------------------
+# Create project output folders.
 mkdir -p scripts/logs
 mkdir -p prompts
 mkdir -p results
 
-# ---------------------------------------------------------------------
 # Load cluster modules.
-#
-# Important:
-# Your cluster may use a different module name for Python or CUDA.
-# If this fails, run:
-#   module avail python
-#   module avail cuda
-#
-# Then replace the module names below with the correct ones.
-# ---------------------------------------------------------------------
 module purge
 
 module load python/python-3.11.4-gcc-12.2.0 || module load python
@@ -69,12 +45,7 @@ module load cuda || true
 echo "Loaded modules:"
 module list || true
 
-# ---------------------------------------------------------------------
-# Create the virtual environment.
-#
-# The environment is stored inside the project folder so that all later
-# SBATCH scripts can activate the same environment.
-# ---------------------------------------------------------------------
+# Create or open the project virtual environment.
 VENV_DIR="${PROJECT_ROOT}/venv"
 
 if [ ! -d "${VENV_DIR}" ]; then
@@ -86,33 +57,15 @@ fi
 
 source "${VENV_DIR}/bin/activate"
 
-# ---------------------------------------------------------------------
-# Upgrade core Python packaging tools.
-# ---------------------------------------------------------------------
+# Upgrade Python packaging tools.
 python -m pip install --upgrade pip setuptools wheel
 
-# ---------------------------------------------------------------------
-# Install PyTorch.
-#
-# This uses the CUDA 12.1 PyTorch wheels, which are commonly compatible
-# with H100 systems. If your cluster recommends a different CUDA version,
-# adjust the index URL.
-# ---------------------------------------------------------------------
+# Install PyTorch with CUDA wheels.
 python -m pip install --upgrade \
     torch torchvision torchaudio \
     --index-url https://download.pytorch.org/whl/cu121
 
-# ---------------------------------------------------------------------
-# Install project dependencies.
-#
-# transformers/accelerate: Hugging Face model loading and generate()
-# vllm: high-throughput LLM serving engine
-# pandas: CSV/data handling
-# tqdm: progress bars
-# aiohttp/openai: async HTTP and OpenAI-compatible vLLM API client support
-# sentencepiece/protobuf: needed by many tokenizers
-# ---------------------------------------------------------------------
-
+# Install general project dependencies.
 python -m pip install --upgrade \
     accelerate \
     datasets \
@@ -126,15 +79,14 @@ python -m pip install --upgrade \
     protobuf \
     huggingface_hub
     
+# Install the Transformers stack version compatible with this vLLM version.
 python -m pip install \
     "transformers==4.46.3" \
     "tokenizers<0.21"
     
+# Install the pinned vLLM version used in the experiments.
 python -m pip install "vllm==0.6.4.post1"
-# ---------------------------------------------------------------------
-# Print environment verification information.
-# This helps debug cluster setup issues from the Slurm log file.
-# ---------------------------------------------------------------------
+
 echo "============================================================"
 echo "Environment verification"
 echo "============================================================"
@@ -142,6 +94,7 @@ echo "============================================================"
 which python
 python --version
 
+# Verify PyTorch, Transformers, and CUDA visibility.
 python - <<'PY'
 import torch
 import transformers
@@ -155,6 +108,7 @@ if torch.cuda.is_available():
     print("CUDA device name:", torch.cuda.get_device_name(0))
 PY
 
+# Verify vLLM import.
 python - <<'PY'
 try:
     import vllm

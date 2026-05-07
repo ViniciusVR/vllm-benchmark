@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# run_hf_sequence_sweep.sbatch
+# run_hf_sequence_sweep.sh
 #
 # Hugging Face generate() sequence-length sweep.
 #
@@ -10,11 +10,8 @@
 #   - Batch size: 1
 #   - Concurrency: 1
 #
-# This isolates the cost of longer contexts and longer outputs without adding
-# batching or simulated concurrent request pressure.
-#
 # Run from project root:
-#   sbatch scripts/run_hf_sequence_sweep.sbatch
+#   sbatch scripts/run_hf_sequence_sweep.sh
 #
 
 #SBATCH --job-name=hf_sequence_sweep
@@ -33,12 +30,14 @@ cd "${PROJECT_ROOT}"
 
 mkdir -p scripts/logs results
 
+# Load cluster modules.
 module purge
 module load python/python-3.11.4-gcc-12.2.0 || module load python
 module load cuda || true
 
 source "${PROJECT_ROOT}/venv/bin/activate"
 
+# Limit CPU threads to avoid cluster thread-limit errors.
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export OPENBLAS_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export MKL_NUM_THREADS=${SLURM_CPUS_PER_TASK}
@@ -46,11 +45,13 @@ export NUMEXPR_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export TOKENIZERS_PARALLELISM=false
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
+# Hugging Face cache and authentication.
 export HF_HOME="${PROJECT_ROOT}/.cache/huggingface"
 export TRANSFORMERS_CACHE="${HF_HOME}/transformers"
 export HF_DATASETS_CACHE="${HF_HOME}/datasets"
 mkdir -p "${HF_HOME}" "${TRANSFORMERS_CACHE}" "${HF_DATASETS_CACHE}"
 
+# Load Hugging Face token from project folder.
 if [ -f "${PROJECT_ROOT}/.hf_token" ]; then
     export HF_TOKEN="$(cat "${PROJECT_ROOT}/.hf_token")"
     echo "HF_TOKEN loaded from project .hf_token file"
@@ -72,6 +73,7 @@ python --version
 MODEL_NAME="meta-llama/Llama-2-7b-chat-hf"
 OUTPUT_CSV="results/hf_sequence_sweep.csv"
 
+# Run sweep.
 python python/benchmark_hf_generate.py \
     --model-name "${MODEL_NAME}" \
     --prompt-files \

@@ -15,7 +15,7 @@ writes a CSV containing:
   - generated tokens/sec
   - requests/sec
 
-This is meant for report examples, not the full benchmark sweep.
+This is meant for report examples.
 """
 
 import argparse
@@ -30,6 +30,8 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
+
+# Prompt loading and sampling helpers.
 def load_prompts(path: str):
     """Load JSONL prompt records."""
     rows = []
@@ -52,6 +54,8 @@ def choose_prompts(rows, num_samples: int, seed: int):
     return rng.sample(rows, num_samples)
 
 
+
+# CSV output helper.
 def write_csv(path: str, rows, fieldnames):
     """Write result rows to CSV."""
     output_path = Path(path)
@@ -63,6 +67,8 @@ def write_csv(path: str, rows, fieldnames):
         writer.writerows(rows)
 
 
+
+# Command-line entry point and generation loop.
 def main():
     parser = argparse.ArgumentParser()
 
@@ -130,10 +136,7 @@ def main():
 
     global_start = time.perf_counter()
 
-    # Process in small batches. For report examples, batch_size=1 is easiest
-    # because latency and throughput are truly per prompt. If batch_size > 1,
-    # the same batch latency is assigned to each prompt in the batch, and an
-    # approximate per-prompt latency is also reported.
+    # Process in small batches. Batch_size=1 is easiest.
     for batch_start in range(0, len(selected), args.batch_size):
         batch = selected[batch_start:batch_start + args.batch_size]
         prompts = [row["PROMPT"] for row in batch]
@@ -194,13 +197,12 @@ def main():
             len(batch) / batch_latency if batch_latency > 0 else 0.0
         )
 
+        # Append results to output CSV.
         for local_idx, row in enumerate(batch):
             prompt_tokens = int(input_lengths[local_idx])
             generated_tokens = generated_lengths[local_idx]
             total_tokens = prompt_tokens + generated_tokens
 
-            # With batch_size=1, this is exact. With larger batches, individual
-            # latency is not directly observable from one generate() call.
             approx_prompt_latency = batch_latency / max(1, len(batch))
 
             prompt_tokens_per_sec = (

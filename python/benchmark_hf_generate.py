@@ -44,10 +44,14 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
+
+# Global context settings used to keep generation within the model window.
 MAX_CONTEXT_TOKENS = 4096
 TOKEN_SAFETY_MARGIN = 32
 
 
+
+# Prompt loading, batching, and token-count helpers.
 def safe_max_new_tokens_from_encoded(encoded: Dict[str, torch.Tensor], requested_max_new_tokens: int) -> int:
     """
     Reduce max_new_tokens so the longest prompt in the batch stays inside
@@ -75,10 +79,8 @@ def load_prompt_file(path: str, limit: Optional[int] = None) -> List[Dict]:
     """
     Load prompts from a JSONL file.
 
-    The script accepts uppercase keys because the provided prompt files use:
+    The script accepts the following keys from the provided prompt files:
       ID, PROMPT, TARGET_TOKENS, ACTUAL_TOKENS
-
-    limit is useful for quick testing.
     """
     rows = []
 
@@ -114,6 +116,8 @@ def safe_token_count(tokenizer, text: str) -> int:
     return len(tokenizer.encode(text, add_special_tokens=False))
 
 
+
+# Core Hugging Face generation path.
 @torch.inference_mode()
 def run_one_batch(
     model,
@@ -180,6 +184,8 @@ def run_one_batch(
     }
 
 
+
+# One full benchmark condition and its CSV summary row.
 def run_condition(
     model,
     tokenizer,
@@ -208,7 +214,7 @@ def run_condition(
       - batch size is usually 1
       - concurrency changes
 
-    If an OOM or other runtime error occurs, the function returns a CSV row
+    If a runtime error occurs, the function returns a CSV row
     marked as failed instead of crashing the entire sweep.
     """
     condition_start = time.perf_counter()
@@ -323,6 +329,8 @@ def infer_prompt_target_from_rows(rows: List[Dict], fallback: int = -1) -> int:
         return fallback
 
 
+
+# CSV output helper.
 def write_row(output_csv: str, row: Dict, fieldnames: List[str]) -> None:
     """
     Append one benchmark result row to CSV.
@@ -345,6 +353,8 @@ def write_row(output_csv: str, row: Dict, fieldnames: List[str]) -> None:
         f.flush()
 
 
+
+# Command-line entry point.
 def main() -> None:
     parser = argparse.ArgumentParser()
 

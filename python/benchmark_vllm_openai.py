@@ -14,9 +14,9 @@ This script is designed to match the Hugging Face generate() sweeps:
 
 Important:
   - vLLM performs its own dynamic batching internally.
-  - batch_size in this script means the number of prompts sent in one HTTP
+  - batch_size in this script is the number of prompts sent in one HTTP
     completion request as a list.
-  - concurrency means the number of HTTP completion requests in flight.
+  - concurrency is the number of HTTP completion requests in flight.
 
 Input JSONL fields:
   ID, PROMPT, TARGET_TOKENS, ACTUAL_TOKENS
@@ -38,10 +38,14 @@ import aiohttp
 from transformers import AutoTokenizer
 
 
+
+# Global context settings used to keep requests within the model window.
 MAX_CONTEXT_TOKENS = 4096
 TOKEN_SAFETY_MARGIN = 32
 
 
+
+# Prompt loading, batching, and request-size helpers.
 def safe_max_new_tokens_for_prompts(tokenizer, prompts: List[str], requested_max_new_tokens: int) -> int:
     """
     Reduce max_new_tokens so each prompt stays inside the context window.
@@ -102,6 +106,8 @@ def infer_prompt_target(rows: List[Dict], fallback: int = -1) -> int:
         return fallback
 
 
+
+# OpenAI-compatible HTTP request helper.
 async def post_completion(
     session: aiohttp.ClientSession,
     url: str,
@@ -142,6 +148,8 @@ async def post_completion(
     }
 
 
+
+# One full vLLM benchmark condition and its CSV summary row.
 async def run_condition(
     tokenizer,
     server_url: str,
@@ -291,6 +299,8 @@ async def run_condition(
         }
 
 
+
+# CSV output helper.
 def write_row(output_csv: str, row: Dict, fieldnames: List[str]) -> None:
     """Append one condition row to CSV."""
     output_path = Path(output_csv)
@@ -308,6 +318,8 @@ def write_row(output_csv: str, row: Dict, fieldnames: List[str]) -> None:
         f.flush()
 
 
+
+# Main async benchmark loop.
 async def main_async(args):
     """Main async benchmark loop."""
     cpus = os.environ.get("SLURM_CPUS_PER_TASK", "4")
@@ -406,6 +418,8 @@ async def main_async(args):
     print("=" * 60)
 
 
+
+# Command-line argument parsing.
 def parse_args():
     parser = argparse.ArgumentParser()
 

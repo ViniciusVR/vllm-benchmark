@@ -27,21 +27,25 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
+
+# Display names used in the generated figures.
 BACKEND_LABELS = {
     "huggingface_generate": "HF",
     "vllm_openai_server": "vLLM",
 }
 
 
+
+# CSV loading and normalization helpers.
 def read_csv_checked(path: Path) -> pd.DataFrame:
-    """Read one CSV file and fail clearly if it is missing."""
+    """Read one CSV file and raise error if it is missing."""
     if not path.exists():
         raise FileNotFoundError(f"Missing expected result file: {path}")
     return pd.read_csv(path)
 
 
 def normalize_backend_label(df: pd.DataFrame) -> pd.DataFrame:
-    """Create clean backend labels for plotting."""
+    """Create labels for plotting."""
     df = df.copy()
     if "backend" not in df.columns:
         raise ValueError("Expected column 'backend' was not found.")
@@ -50,15 +54,7 @@ def normalize_backend_label(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Normalize column names across HF and vLLM result files.
-
-    Important fix:
-    The combined dataframe can contain both `batch_size` and
-    `batch_size_requested`. HF batch results may only fill `batch_size`, while
-    vLLM fills `batch_size_requested`. Therefore, we fill missing
-    `batch_size_requested` values from `batch_size` row-by-row.
-    """
+    """Normalize column names across HF and vLLM result files."""
     df = df.copy()
 
     if "batch_size_requested" not in df.columns:
@@ -99,7 +95,7 @@ def load_pair(results_dir: Path, sweep: str) -> pd.DataFrame:
     combined = normalize_backend_label(combined)
     combined = normalize_columns(combined)
 
-    # Keep successful rows only so failed/OOM rows do not appear as zeros.
+    # Keep successful rows only so failed rows do not appear as zeros.
     if "status" in combined.columns:
         combined = combined[combined["status"].astype(str).str.strip().str.lower() == "ok"].copy()
 
@@ -118,6 +114,8 @@ def load_pair(results_dir: Path, sweep: str) -> pd.DataFrame:
     return combined
 
 
+
+# Sweep-specific dataframe preparation.
 def prepare_sweep_data(df: pd.DataFrame, sweep: str, metric: str):
     """Select the x-axis variable for each sweep and aggregate values."""
     if metric not in df.columns:
@@ -154,6 +152,8 @@ def prepare_sweep_data(df: pd.DataFrame, sweep: str, metric: str):
     return plot_df, x_col, x_label
 
 
+
+# Plot labeling helpers.
 def pretty_metric_name(metric: str) -> str:
     """Convert CSV metric names into title-case labels."""
     names = {
@@ -177,6 +177,8 @@ def pretty_sweep_title(sweep: str) -> str:
     return names[sweep]
 
 
+
+# Figure creation.
 def plot_grouped_bar(
     plot_df: pd.DataFrame,
     x_col: str,
@@ -219,6 +221,8 @@ def plot_grouped_bar(
     plt.close()
 
 
+
+# Command-line entry point.
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--results-dir", default="results")

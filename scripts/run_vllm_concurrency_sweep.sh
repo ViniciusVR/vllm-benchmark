@@ -1,12 +1,17 @@
 #!/bin/bash
 #
-# run_vllm_concurrency_sweep.sbatch
+# run_vllm_concurrency_sweep.sh
 #
 # vLLM concurrency sweep.
-# Prompt length: 512, output length: 512, batch size: 1, concurrency: 1/2/4/8/16/32
+#
+# Experiment:
+#   - Prompt length: 512 tokens
+#   - Output length: 512 generated tokens
+#   - Batch size: 1
+#   - Simulated concurrency: 1, 2, 4, 8, 16, 32
 #
 # Run from project root:
-#   sbatch scripts/run_vllm_concurrency_sweep.sbatch
+#   sbatch scripts/run_vllm_concurrency_sweep.sh
 #
 
 #SBATCH --job-name=vllm_concurrency_sweep
@@ -16,7 +21,7 @@
 #SBATCH --gres=gpu:nvidia_h100_pcie:1
 #SBATCH --output=scripts/logs/vllm_concurrency_sweep_%j.out
 #SBATCH --error=scripts/logs/vllm_concurrency_sweep_%j.err
-#SBATCH --time=04:00:00
+#SBATCH --time=08:00:00
 
 set -euo pipefail
 
@@ -32,13 +37,14 @@ cd "${PROJECT_ROOT}"
 
 mkdir -p scripts/logs results
 
+# Load cluster modules.
 module purge
 module load python/python-3.11.4-gcc-12.2.0 || module load python
 module load cuda || true
 
 source "${PROJECT_ROOT}/venv/bin/activate"
 
-# Limit CPU-side threading to avoid OpenBLAS/MKL process-limit errors.
+# Limit CPU threads to avoid cluster thread-limit errors.
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export OPENBLAS_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 export MKL_NUM_THREADS=${SLURM_CPUS_PER_TASK}
@@ -53,6 +59,7 @@ export HF_DATASETS_CACHE="${HF_HOME}/datasets"
 
 mkdir -p "${HF_HOME}" "${TRANSFORMERS_CACHE}" "${HF_DATASETS_CACHE}"
 
+# Load Hugging Face token from project folder.
 if [ -f "${PROJECT_ROOT}/.hf_token" ]; then
     export HF_TOKEN="$(cat "${PROJECT_ROOT}/.hf_token")"
     echo "HF_TOKEN loaded from project .hf_token file"
@@ -80,6 +87,7 @@ echo "============================================================"
 echo "Model: ${MODEL_NAME}"
 echo "Port: ${PORT}"
 
+# Start vLLM server in the background.
 python -m vllm.entrypoints.openai.api_server \
     --model "${MODEL_NAME}" \
     --host 127.0.0.1 \
@@ -92,6 +100,7 @@ python -m vllm.entrypoints.openai.api_server \
 
 SERVER_PID=$!
 
+# Stop the background server when the job exits.
 cleanup() {
     echo "Stopping vLLM server with PID ${SERVER_PID}"
     kill "${SERVER_PID}" 2>/dev/null || true
@@ -100,6 +109,7 @@ trap cleanup EXIT
 
 echo "Waiting for vLLM server to become ready..."
 
+# Poll the server until the OpenAI-compatible endpoint is available.
 python - <<PY
 import time
 import requests
@@ -129,6 +139,7 @@ echo "============================================================"
 OUTPUT_CSV="results/vllm_concurrency_sweep.csv"
 PROMPT_FILE="prompts/prompts_512.jsonl"
 
+# Run sweep.
 python python/benchmark_vllm_openai.py \
     --model-name "${MODEL_NAME}" \
     --server-url "${SERVER_URL}" \
