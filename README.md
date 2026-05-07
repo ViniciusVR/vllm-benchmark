@@ -41,8 +41,6 @@ vllm-benchmark/
 └── README.md
 ```
 
-Generated folders such as `venv/`, `.cache/`, `results/`, `figures/`, and `scripts/logs/` are not required to be committed.
-
 ---
 
 ## 1. Clone the Repository
