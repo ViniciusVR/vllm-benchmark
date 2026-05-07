@@ -85,11 +85,13 @@ The Slurm scripts automatically load the token using:
 export HF_TOKEN="$(cat .hf_token)"
 ```
 
-If you are running manually, you can also export it yourself:
+If you are running manually, you can also export it yourself. From the project root:
 
 ```bash
 export HF_TOKEN="$(cat .hf_token)"
 ```
+
+This export only lasts for the current terminal session. If you close the terminal, you need to run it again.
 
 ---
 
