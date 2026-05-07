@@ -79,14 +79,6 @@ nano .hf_token
 
 Paste your Hugging Face token into the file, save, and exit.
 
-The file should look like this:
-
-```text
-hf_your_token_here
-```
-
-Do not commit `.hf_token` to GitHub. It is already included in `.gitignore`.
-
 The Slurm scripts automatically load the token using:
 
 ```bash
