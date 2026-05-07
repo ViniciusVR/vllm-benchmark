@@ -11,25 +11,26 @@ The project was designed to run on UCF's Newton HPC cluster, but it can also be 
 ```text
 vllm-benchmark/
 ├── prompts/
-│   ├── prompts_128_revised.jsonl
-│   ├── prompts_256_revised.jsonl
-│   ├── prompts_512_revised.jsonl
-│   ├── prompts_1024_revised.jsonl
-│   └── prompts_2048_revised.jsonl
+│   ├── prompts_128.jsonl
+│   ├── prompts_256.jsonl
+│   ├── prompts_512.jsonl
+│   ├── prompts_1024.jsonl
+│   └── prompts_2048.jsonl
 ├── python/
 │   ├── benchmark_hf_generate.py
 │   ├── benchmark_vllm_openai.py
 │   ├── plot_sweep_results.py
 │   └── sample_hf_outputs_with_metrics.py
 ├── scripts/
-│   ├── setup_env.sbatch
-│   ├── run_hf_batch_sweep.sbatch
-│   ├── run_hf_sequence_sweep.sbatch
-│   ├── run_hf_concurrency_sweep.sbatch
-│   ├── run_vllm_batch_sweep.sbatch
-│   ├── run_vllm_sequence_sweep.sbatch
-│   ├── run_vllm_concurrency_sweep.sbatch
-│   └── run_sample_hf_outputs.sbatch
+│   ├── setup_env.sh
+│   ├── run_hf_batch_sweep.sh
+│   ├── run_hf_sequence_sweep.sh
+│   ├── run_hf_concurrency_sweep.sh
+│   ├── run_vllm_batch_sweep.sh
+│   ├── run_vllm_sequence_sweep.sh
+│   ├── run_vllm_concurrency_sweep.sh
+│   ├── show_results.sh
+│   └── run_sample_hf_outputs.sh
 ├── requirements.txt
 ├── .gitignore
 └── README.md
