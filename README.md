@@ -358,6 +358,11 @@ When finished, stop the vLLM server with `Ctrl+C` in the first terminal.
 ## 7. Plotting Figures
 
 After the HF and vLLM sweeps have finished, create comparison figures with:
+```bash
+sbatch scripts/show_results.sh
+```
+
+or directly, using:
 
 ```bash
 python python/plot_sweep_results.py \
@@ -373,15 +378,6 @@ figures/batch_sweep_requests_per_sec.png
 figures/sequence_sweep_requests_per_sec.png
 figures/concurrency_sweep_requests_per_sec.png
 ```
-
-Other available metrics include:
-
-```bash
-python python/plot_sweep_results.py --results-dir results --output-dir figures --metric generated_tokens_per_sec
-python python/plot_sweep_results.py --results-dir results --output-dir figures --metric tokens_per_sec
-python python/plot_sweep_results.py --results-dir results --output-dir figures --metric total_time_sec
-```
-
 ---
 
 ## 8. Changing the Model
@@ -392,9 +388,7 @@ As mentioned before, scripts are written for:
 meta-llama/Llama-2-7b-chat-hf
 ```
 
-To test a different model, edit the `MODEL_NAME` line in the Slurm script.
-
-If using a gated model, make sure your `.hf_token` has access to that model.
+To test a different model, edit the MODEL_NAME line in the Slurm script, or replace the --model-name argument when running the Python benchmark scripts directly. If using a gated model, make sure your `.hf_token` has access to that model.
 
 ---
 
