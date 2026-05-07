@@ -388,4 +388,4 @@ As mentioned before, scripts are written for:
 meta-llama/Llama-2-7b-chat-hf
 ```
 
-To test a different model, edit the MODEL_NAME line in the Slurm script, or replace the --model-name argument when running the Python benchmark scripts directly. If using a gated model, make sure your `.hf_token` has access to that model.
+To test a different model, edit the `MODEL_NAME` line in the Slurm script, or replace the `--model-name` argument when running the Python benchmark scripts directly. If using a gated model, make sure your `.hf_token` has access to that model.
