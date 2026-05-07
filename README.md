@@ -100,7 +100,7 @@ This export only lasts for the current terminal session. If you close the termin
 The easiest setup on a Slurm cluster is to use the provided setup script:
 
 ```bash
-sbatch scripts/setup_env.sbatch
+sbatch scripts/setup_env.sh
 ```
 
 This script creates a virtual environment and installs the required packages.
@@ -175,9 +175,9 @@ The Hugging Face baseline uses `AutoModelForCausalLM.generate()`.
 Run the three sweeps with:
 
 ```bash
-sbatch scripts/run_hf_batch_sweep.sbatch
-sbatch scripts/run_hf_sequence_sweep.sbatch
-sbatch scripts/run_hf_concurrency_sweep.sbatch
+sbatch scripts/run_hf_batch_sweep.sh
+sbatch scripts/run_hf_sequence_sweep.sh
+sbatch scripts/run_hf_concurrency_sweep.sh
 ```
 
 These create:
@@ -258,9 +258,9 @@ The vLLM benchmarks use a local OpenAI-compatible vLLM server. The benchmark cli
 Run the three sweeps with:
 
 ```bash
-sbatch scripts/run_vllm_batch_sweep.sbatch
-sbatch scripts/run_vllm_sequence_sweep.sbatch
-sbatch scripts/run_vllm_concurrency_sweep.sbatch
+sbatch scripts/run_vllm_batch_sweep.sh
+sbatch scripts/run_vllm_sequence_sweep.sh
+sbatch scripts/run_vllm_concurrency_sweep.sh
 ```
 
 These create:
