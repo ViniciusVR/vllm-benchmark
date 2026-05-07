@@ -1,0 +1,24 @@
+# Core benchmark dependencies
+torch==2.5.1
+torchvision
+torchaudio
+
+# Hugging Face / model loading
+transformers==4.46.3
+tokenizers<0.21
+accelerate
+datasets
+huggingface_hub
+sentencepiece
+protobuf
+
+# vLLM serving backend
+vllm==0.6.4.post1
+
+# Benchmark scripts and plotting
+pandas
+matplotlib
+tqdm
+aiohttp
+requests
+openai

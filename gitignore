@@ -1,0 +1,63 @@
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter / notebooks
+.ipynb_checkpoints/
+
+# Hugging Face cache and tokens
+.cache/
+.hf_token
+huggingface_token
+token.txt
+
+# Secrets / environment files
+.env
+.env.*
+*.key
+*.pem
+
+# Slurm logs
+scripts/logs/
+*.out
+*.err
+
+# Generated results
+# Remove these lines if you want to commit final CSVs/figures for grading.
+results/
+figures/
+
+# Large model/data artifacts
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+*.onnx
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# LaTeX build files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
