@@ -163,11 +163,14 @@ pip install "transformers==4.46.3" "tokenizers<0.21"
 pip uninstall -y vllm
 pip install "vllm==0.6.4.post1"
 ```
+
 ---
 
 ## 5. Running the Hugging Face Benchmarks
 
 The Hugging Face baseline uses `AutoModelForCausalLM.generate()`.
+
+### Slurm
 
 Run the three sweeps with:
 
@@ -184,11 +187,73 @@ results/hf_batch_sweep.csv
 results/hf_sequence_sweep.csv
 results/hf_concurrency_sweep.csv
 ```
+
+### Non-Slurm
+
+If you are not using Slurm, activate the virtual environment and export the Hugging Face token first:
+
+```bash
+source venv/bin/activate
+export HF_TOKEN="$(cat .hf_token)"
+mkdir -p results
+```
+
+Run the batch-size sweep:
+
+```bash
+python python/benchmark_hf_generate.py \
+    --model-name meta-llama/Llama-2-7b-chat-hf \
+    --prompt-files prompts/prompts_512.jsonl \
+    --output-csv results/hf_batch_sweep.csv \
+    --sweep-name batch_sweep \
+    --batch-sizes 1 2 4 8 16 32 \
+    --concurrency-levels 1 \
+    --max-new-tokens 512 \
+    --output-length-mode fixed \
+    --dtype float16
+```
+
+Run the sequence-length sweep:
+
+```bash
+python python/benchmark_hf_generate.py \
+    --model-name meta-llama/Llama-2-7b-chat-hf \
+    --prompt-files \
+        prompts/prompts_128.jsonl \
+        prompts/prompts_256.jsonl \
+        prompts/prompts_512.jsonl \
+        prompts/prompts_1024.jsonl \
+        prompts/prompts_2048.jsonl \
+    --output-csv results/hf_sequence_sweep.csv \
+    --sweep-name sequence_sweep \
+    --batch-sizes 1 \
+    --concurrency-levels 1 \
+    --output-length-mode prompt_target \
+    --dtype float16
+```
+
+Run the concurrency sweep:
+
+```bash
+python python/benchmark_hf_generate.py \
+    --model-name meta-llama/Llama-2-7b-chat-hf \
+    --prompt-files prompts/prompts_512.jsonl \
+    --output-csv results/hf_concurrency_sweep.csv \
+    --sweep-name concurrency_sweep \
+    --batch-sizes 1 \
+    --concurrency-levels 1 2 4 8 16 32 \
+    --max-new-tokens 512 \
+    --output-length-mode fixed \
+    --dtype float16
+```
+
 ---
 
 ## 6. Running the vLLM Benchmarks
 
-The vLLM benchmarks launch a local OpenAI-compatible vLLM server inside each Slurm job. The benchmark client sends requests to that server.
+The vLLM benchmarks use a local OpenAI-compatible vLLM server. The benchmark client sends completion requests to that server.
+
+### Slurm
 
 Run the three sweeps with:
 
@@ -205,9 +270,92 @@ results/vllm_batch_sweep.csv
 results/vllm_sequence_sweep.csv
 results/vllm_concurrency_sweep.csv
 ```
+
+### Non-Slurm
+
+If you are not using Slurm, activate the virtual environment and export the Hugging Face token first:
+
+```bash
+source venv/bin/activate
+export HF_TOKEN="$(cat .hf_token)"
+mkdir -p results scripts/logs
+```
+
+Start the vLLM server in one terminal:
+
+```bash
+python -m vllm.entrypoints.openai.api_server \
+    --model meta-llama/Llama-2-7b-chat-hf \
+    --host 127.0.0.1 \
+    --port 8000 \
+    --dtype float16 \
+    --device cuda \
+    --max-model-len 4096 \
+    --gpu-memory-utilization 0.85
+```
+
+Keep that terminal open while running the vLLM benchmarks. In a second terminal, move back into the project folder, activate the environment again, and export the token:
+
+```bash
+cd vllm-benchmark
+source venv/bin/activate
+export HF_TOKEN="$(cat .hf_token)"
+```
+
+Run the vLLM batch-size sweep:
+
+```bash
+python python/benchmark_vllm_openai.py \
+    --model-name meta-llama/Llama-2-7b-chat-hf \
+    --server-url http://127.0.0.1:8000 \
+    --prompt-files prompts/prompts_512.jsonl \
+    --output-csv results/vllm_batch_sweep.csv \
+    --sweep-name batch_sweep \
+    --batch-sizes 1 2 4 8 16 32 \
+    --concurrency-levels 1 \
+    --max-new-tokens 512 \
+    --output-length-mode fixed
+```
+
+Run the vLLM sequence-length sweep:
+
+```bash
+python python/benchmark_vllm_openai.py \
+    --model-name meta-llama/Llama-2-7b-chat-hf \
+    --server-url http://127.0.0.1:8000 \
+    --prompt-files \
+        prompts/prompts_128.jsonl \
+        prompts/prompts_256.jsonl \
+        prompts/prompts_512.jsonl \
+        prompts/prompts_1024.jsonl \
+        prompts/prompts_2048.jsonl \
+    --output-csv results/vllm_sequence_sweep.csv \
+    --sweep-name sequence_sweep \
+    --batch-sizes 1 \
+    --concurrency-levels 1 \
+    --output-length-mode prompt_target
+```
+
+Run the vLLM concurrency sweep:
+
+```bash
+python python/benchmark_vllm_openai.py \
+    --model-name meta-llama/Llama-2-7b-chat-hf \
+    --server-url http://127.0.0.1:8000 \
+    --prompt-files prompts/prompts_512.jsonl \
+    --output-csv results/vllm_concurrency_sweep.csv \
+    --sweep-name concurrency_sweep \
+    --batch-sizes 1 \
+    --concurrency-levels 1 2 4 8 16 32 \
+    --max-new-tokens 512 \
+    --output-length-mode fixed
+```
+
+When finished, stop the vLLM server with `Ctrl+C` in the first terminal.
+
 ---
 
-## 8. Plotting Figures
+## 7. Plotting Figures
 
 After the HF and vLLM sweeps have finished, create comparison figures with:
 
@@ -236,7 +384,7 @@ python python/plot_sweep_results.py --results-dir results --output-dir figures -
 
 ---
 
-## 10. Changing the Model
+## 8. Changing the Model
 
 As mentioned before, scripts are written for:
 
@@ -249,4 +397,5 @@ To test a different model, edit the `MODEL_NAME` line in the Slurm script.
 If using a gated model, make sure your `.hf_token` has access to that model.
 
 ---
-evaluate how serving-oriented features such as dynamic request scheduling and PagedAttention-based KV-cache management affect throughput as batch size, sequence length, and concurrency increase.
+
+This benchmark evaluates how serving-oriented features such as dynamic request scheduling and PagedAttention-based KV-cache management affect throughput as batch size, sequence length, and concurrency increase.
