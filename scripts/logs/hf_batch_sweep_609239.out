@@ -1,0 +1,62 @@
+HF_TOKEN loaded from project .hf_token file
+============================================================
+Starting HF batch sweep
+Job ID: 609239
+Node: evc33
+Start time: Mon May  4 23:21:46 EDT 2026
+============================================================
+Mon May  4 23:21:49 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.105.08             Driver Version: 580.105.08     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H100 PCIe               Off |   00000000:CA:00.0 Off |                    0 |
+| N/A   67C    P0            101W /  310W |       0MiB /  81559MiB |      2%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+/home/vi661977/VLLMBenchmark/venv/bin/python
+Python 3.11.4
+============================================================
+Loading model and tokenizer
+============================================================
+Model: meta-llama/Llama-2-7b-chat-hf
+Device: cuda
+Dtype: float16
+============================================================
+Prompt file: prompts/prompts_512.jsonl
+Loaded prompts: 100
+Prompt target: 512
+Max new tokens: 512
+============================================================
+Running condition: sweep=batch_sweep, prompt_target=512, batch=1, concurrency=1, max_new_tokens=512
+Finished condition with status=ok, tokens/sec=106.66, requests/sec=0.10
+Running condition: sweep=batch_sweep, prompt_target=512, batch=2, concurrency=1, max_new_tokens=512
+Finished condition with status=ok, tokens/sec=198.40, requests/sec=0.18
+Running condition: sweep=batch_sweep, prompt_target=512, batch=4, concurrency=1, max_new_tokens=512
+Finished condition with status=ok, tokens/sec=405.39, requests/sec=0.37
+Running condition: sweep=batch_sweep, prompt_target=512, batch=8, concurrency=1, max_new_tokens=512
+Finished condition with status=ok, tokens/sec=654.10, requests/sec=0.59
+Running condition: sweep=batch_sweep, prompt_target=512, batch=16, concurrency=1, max_new_tokens=512
+Finished condition with status=ok, tokens/sec=883.83, requests/sec=0.79
+Running condition: sweep=batch_sweep, prompt_target=512, batch=32, concurrency=1, max_new_tokens=512
+Finished condition with status=ok, tokens/sec=1029.17, requests/sec=0.91
+============================================================
+Benchmark complete
+Results saved to: results/hf_batch_sweep.csv
+============================================================
+============================================================
+HF batch sweep complete
+Results: results/hf_batch_sweep.csv
+End time: Mon May  4 23:59:56 EDT 2026
+============================================================

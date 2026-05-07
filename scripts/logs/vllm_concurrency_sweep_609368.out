@@ -1,0 +1,76 @@
+============================================================
+Starting vLLM concurrency sweep
+Job ID: 609368
+Node: evc48
+Start time: Tue May  5 00:49:48 EDT 2026
+============================================================
+HF_TOKEN loaded from project .hf_token file
+============================================================
+Loaded modules and GPU info
+============================================================
+Tue May  5 00:49:51 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.105.08             Driver Version: 580.105.08     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H100 PCIe               Off |   00000000:17:00.0 Off |                    0 |
+| N/A   43C    P0             85W /  310W |       0MiB /  81559MiB |      2%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+/home/vi661977/VLLMBenchmark/venv/bin/python
+Python 3.11.4
+============================================================
+Starting vLLM OpenAI-compatible server
+============================================================
+Model: meta-llama/Llama-2-7b-chat-hf
+Port: 8368
+Waiting for vLLM server to become ready...
+vLLM server is ready.
+============================================================
+Running vLLM benchmark client
+============================================================
+============================================================
+Loading tokenizer
+============================================================
+Model: meta-llama/Llama-2-7b-chat-hf
+Server URL: http://127.0.0.1:8368
+Output CSV: results/vllm_concurrency_sweep.csv
+============================================================
+Prompt file: prompts/prompts_512.jsonl
+Loaded prompts: 100
+Prompt target: 512
+Max new tokens: 512
+============================================================
+Running vLLM condition: sweep=concurrency_sweep, prompt_target=512, batch=1, concurrency=1, max_new_tokens=512
+Finished condition status=ok, tokens/sec=211.59, requests/sec=0.19, http req/sec=0.19
+Running vLLM condition: sweep=concurrency_sweep, prompt_target=512, batch=1, concurrency=2, max_new_tokens=512
+Finished condition status=ok, tokens/sec=407.27, requests/sec=0.37, http req/sec=0.37
+Running vLLM condition: sweep=concurrency_sweep, prompt_target=512, batch=1, concurrency=4, max_new_tokens=512
+Finished condition status=ok, tokens/sec=758.50, requests/sec=0.70, http req/sec=0.70
+Running vLLM condition: sweep=concurrency_sweep, prompt_target=512, batch=1, concurrency=8, max_new_tokens=512
+Finished condition status=ok, tokens/sec=1278.87, requests/sec=1.17, http req/sec=1.17
+Running vLLM condition: sweep=concurrency_sweep, prompt_target=512, batch=1, concurrency=16, max_new_tokens=512
+Finished condition status=ok, tokens/sec=2026.40, requests/sec=1.86, http req/sec=1.86
+Running vLLM condition: sweep=concurrency_sweep, prompt_target=512, batch=1, concurrency=32, max_new_tokens=512
+Finished condition status=ok, tokens/sec=2847.46, requests/sec=2.62, http req/sec=2.62
+============================================================
+vLLM benchmark complete
+Results saved to: results/vllm_concurrency_sweep.csv
+============================================================
+============================================================
+vLLM concurrency sweep complete
+Results: results/vllm_concurrency_sweep.csv
+End time: Tue May  5 01:09:42 EDT 2026
+============================================================
+Stopping vLLM server with PID 1924119

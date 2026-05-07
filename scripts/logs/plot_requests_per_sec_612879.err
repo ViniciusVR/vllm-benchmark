@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/lustre/fs1/home/vi661977/VLLMBenchmark/python/plot_sweep_results.py", line 36, in <module>
+    import matplotlib.pyplot as plt
+ModuleNotFoundError: No module named 'matplotlib'

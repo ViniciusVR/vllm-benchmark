@@ -1,0 +1,22 @@
+============================================================
+Creating requests/sec figures
+Job ID: 612886
+Node: evc21
+Start time: Wed May  6 21:47:51 EDT 2026
+============================================================
+============================================================
+Python environment
+============================================================
+/home/vi661977/VLLMBenchmark/venv/bin/python
+Python 3.11.4
+============================================================
+Running plotting script
+============================================================
+Saved figures/batch_sweep_requests_per_sec.png
+Saved figures/sequence_sweep_requests_per_sec.png
+Saved figures/concurrency_sweep_requests_per_sec.png
+============================================================
+Plotting complete
+Figures saved in: figures/
+End time: Wed May  6 21:48:19 EDT 2026
+============================================================

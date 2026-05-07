@@ -1,0 +1,58 @@
+/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/transformers/utils/hub.py:128: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/entrypoints/openai/api_server.py", line 643, in <module>
+    uvloop.run(run_server(args))
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/uvloop/__init__.py", line 92, in run
+    return runner.run(wrapper())
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/apps/python/python-3.11.4-gcc-12.2.0/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/uvloop/__init__.py", line 48, in wrapper
+    return await main
+           ^^^^^^^^^^
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/entrypoints/openai/api_server.py", line 609, in run_server
+    async with build_async_engine_client(args) as engine_client:
+  File "/apps/python/python-3.11.4-gcc-12.2.0/lib/python3.11/contextlib.py", line 204, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/entrypoints/openai/api_server.py", line 113, in build_async_engine_client
+    async with build_async_engine_client_from_engine_args(
+  File "/apps/python/python-3.11.4-gcc-12.2.0/lib/python3.11/contextlib.py", line 204, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/entrypoints/openai/api_server.py", line 197, in build_async_engine_client_from_engine_args
+    engine_config = engine_args.create_engine_config()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/engine/arg_utils.py", line 958, in create_engine_config
+    device_config = DeviceConfig(device=self.device)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/config.py", line 1208, in __init__
+    raise RuntimeError("Failed to infer device type")
+RuntimeError: Failed to infer device type
+/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/transformers/utils/hub.py:128: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/apps/python/python-3.11.4-gcc-12.2.0/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/apps/python/python-3.11.4-gcc-12.2.0/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/engine/multiprocessing/engine.py", line 368, in run_mp_engine
+    raise e
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/engine/multiprocessing/engine.py", line 357, in run_mp_engine
+    engine = MQLLMEngine.from_engine_args(engine_args=engine_args,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/engine/multiprocessing/engine.py", line 114, in from_engine_args
+    engine_config = engine_args.create_engine_config()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/engine/arg_utils.py", line 958, in create_engine_config
+    device_config = DeviceConfig(device=self.device)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/vi661977/VLLMBenchmark/venv/lib/python3.11/site-packages/vllm/config.py", line 1208, in __init__
+    raise RuntimeError("Failed to infer device type")
+RuntimeError: Failed to infer device type

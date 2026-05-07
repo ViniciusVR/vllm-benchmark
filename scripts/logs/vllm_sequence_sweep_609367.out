@@ -1,0 +1,21 @@
+============================================================
+Starting vLLM sequence sweep
+Job ID: 609367
+Node: evc37
+Start time: Tue May  5 00:49:44 EDT 2026
+============================================================
+HF_TOKEN loaded from project .hf_token file
+============================================================
+Loaded modules and GPU info
+============================================================
+No devices were found
+/home/vi661977/VLLMBenchmark/venv/bin/python
+Python 3.11.4
+============================================================
+Starting vLLM OpenAI-compatible server
+============================================================
+Model: meta-llama/Llama-2-7b-chat-hf
+Port: 8367
+Waiting for vLLM server to become ready...
+ERROR: vLLM server did not become ready in time.
+Stopping vLLM server with PID 504267
